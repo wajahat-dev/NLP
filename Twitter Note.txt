@@ -1,0 +1,10 @@
+Depression on social media
+https://www.kaggle.com/code/wajahatali007/depression-on-social-media/edit
+Replace the code with to download files
+
+import pandas as pd
+data['Clean_TweetText'] = data['Clean_TweetText'].apply(lambda x: ' '.join([w for w in x.split() if len(w) > 3]))
+unique_words = set(' '.join(data['Clean_TweetText']).split())
+unique_words_text = ' '.join(unique_words)
+with open('your_file_path.txt', 'w', encoding='utf-8') as file:
+    file.write(unique_words_text)
