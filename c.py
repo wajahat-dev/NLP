@@ -1,14 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 import nltk
-from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from collections import Counter
+from urllib.parse import urlparse
 
-# Download NLTK stopwords and punkt resources
-nltk.download('stopwords', quiet=True)
-nltk.download('stopwords-urdu', quiet=True)
+# Download NLTK resources
 nltk.download('punkt', quiet=True)
+
 # Function to check if a word consists only of Urdu letters
 def is_urdu_word(word):
     return any(0x600 <= ord(char) <= 0x6FF for char in word)
@@ -23,17 +21,9 @@ def extract_text(html):
 
 # Function to get unique non-grammatical Urdu words
 def get_unique_urdu_words(text):
-    urdu_stop_words_file = "urdu_stopwords.txt"
-
-    with open(urdu_stop_words_file, 'r', encoding='utf-8') as stop_words_file:
-        urdu_stop_words = set(line.strip() for line in stop_words_file if line.strip())
-
-    additional_stop_words = set(["اور", "کا", "کو", "کے", "کی", "ہے", "ہوتا", "ہوتی", "ہوتے", "کر", "کرتا", "کرتی", "کرتے", "ہوا", "ہوئی", "ہوئے"])
-
     words = word_tokenize(text)
-    filtered_words = [word for word in words if word.isalpha() and is_urdu_word(word) and word not in urdu_stop_words and word not in additional_stop_words]
+    filtered_words = [word for word in words if word.isalpha() and is_urdu_word(word)]
     return set(filtered_words)
-
 
 # Function to save unique Urdu words to a file
 def save_urdu_to_file(unique_urdu_words, filename):
@@ -90,6 +80,7 @@ def scrape_blog_and_save(url, output_filename, crawled_urls_file, exclude_common
         print(f"{len(urdu_words)} unique Urdu words extracted and saved from {url}")
     except requests.RequestException as e:
         print(f"Error processing {url}: {e}")
+
 if __name__ == "__main__":
     output_filename = "unique_urdu_words.txt"
     crawled_urls_file = "crawled_urls.txt"
