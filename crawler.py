@@ -9,7 +9,7 @@ def get_links(url, base_domain):
         soup = BeautifulSoup(response.content, 'html.parser')
         links = [urljoin(url, a['href']) for a in soup.find_all('a', href=True)]
         
-        # Filter links to include only those within the base domain
+        # Filter links to include only those within the specified base domain
         links = [link for link in links if urlparse(link).netloc == base_domain]
         
         return links
@@ -35,15 +35,19 @@ def crawl_website(start_urls_file, output_file):
     except FileNotFoundError:
         pass
 
-    # Read start_urls from a file
+    # Read start_urls and base_domain from a file
     try:
         with open(start_urls_file, 'r') as file:
             start_urls = [line.strip() for line in file]
+            if start_urls:
+                base_domain = urlparse(start_urls[0]).netloc  # Assuming the first URL determines the base domain
+            else:
+                print(f"Error: Start URLs file '{start_urls_file}' is empty.")
+                return
     except FileNotFoundError:
         print(f"Error: Start URLs file '{start_urls_file}' not found.")
         return
 
-    base_domain = urlparse(start_urls[0]).netloc  # Assuming the first URL determines the base domain
     download_urls = set(start_urls)
 
     while download_urls:
