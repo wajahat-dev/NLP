@@ -2,9 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 
+# Headers to mimic a web browser
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+}
+
 def get_links(url, base_domain):
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
         links = [urljoin(url, a['href']) for a in soup.find_all('a', href=True)]
@@ -19,7 +24,7 @@ def get_links(url, base_domain):
 
 def is_downloadable(url):
     try:
-        response = requests.head(url)
+        response = requests.head(url, headers=headers)
         return response.status_code == 200
     except requests.RequestException as e:
         print(f"Error checking download status for {url}: {e}")
