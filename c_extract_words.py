@@ -66,9 +66,12 @@ def scrape_blog_and_save(url, output_filename, crawled_urls_file, exclude_common
     if is_url_crawled(url, crawled_urls_file):
         print(f"URL already crawled: {url}")
         return
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
 
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         html = response.text
         text = extract_text(html)
@@ -87,12 +90,12 @@ if __name__ == "__main__":
     downloadable_urls_file = "downloadable_urls.txt"
 
     try:
-        with open(downloadable_urls_file, 'r') as file:
+        with open(downloadable_urls_file, 'r', encoding='utf-8') as file:
             blog_urls = [line.strip() for line in file if line.strip()]
     except FileNotFoundError:
         print(f"Error: {downloadable_urls_file} not found.")
         blog_urls = []
-
+        
     print("Running the Urdu scraping tool...")
     for url in blog_urls:
         scrape_blog_and_save(url, output_filename, crawled_urls_file, exclude_common=True)
